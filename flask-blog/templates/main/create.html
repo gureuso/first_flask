@@ -1,0 +1,62 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>posts</title>
+  <script src="/static/js/ckeditor/ckeditor.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div id="container">
+    {% include 'layout/sidebar.html' %}
+
+    <div id="main">
+      <div id="main-title">
+        <h1>글쓰기</h1>
+      </div>
+
+      <input class="form-control mt-2 mb-2" type="text" placeholder="타이틀" id="post_title">
+      <textarea name="post_content" id="post_content"></textarea>
+      <input class="form-control mt-2" type="text" placeholder="태그(,로 구분)" id="post_tags">
+      <span class="btn btn-primary float-right" onclick="create_post()">저장</span>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    $(function() {
+      CKEDITOR.replace("post_content", {
+        filebrowserUploadUrl: "{{ url_for('apis_posts.file_upload') }}",
+        extraPlugins: "autogrow",
+        autoGrow_minHeight: 300,
+        removePlugins: "resize"
+      });
+    });
+
+    function get_post_data() {
+      return {
+        title: $("#post_title").val(),
+        content: CKEDITOR.instances["post_content"].getData(),
+        tags: $("#post_tags").val(),
+      }
+    }
+
+    function create_post() {
+      const data = get_post_data();
+      if(!(data.content || data.title || data.tags)) {
+        return alert("제목과 본문을 입력해주세요.");
+      }
+
+      $.ajax({
+        url: "{{ url_for('apis_posts.create_post') }}",
+        type: "POST",
+        data: data,
+        success: function() {
+          window.location.href = "{{ url_for('index.index') }}"
+        },
+        error(xhr) {
+          alert(`${xhr.status} / ${xhr.responseJSON['message']}`);
+        }
+      });
+    }
+  </script>
+{% endblock %}

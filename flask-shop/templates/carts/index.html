@@ -1,0 +1,94 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>flask shop</title>
+{% endblock %}
+
+{% block body %}
+  {% include 'layout/header.html' %}
+
+  <div class="container pt-4">
+    <div class="row">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">product_id</th>
+            <th scope="col">name</th>
+            <th scope="col">price</th>
+            <th scope="col">count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, value in carts.items() %}
+            <tr>
+              <td scope="row">{{ key }}</td>
+              <td>{{ value['cart'].product.name }}</td>
+              <td>{{'{:,}'.format(value['cart'].product.price)}}원</td>
+              <td><input type="number" value="{{ value['cnt'] }}" class="form-control cart-cnt" data-product-id="{{ key }}" data-price="{{ value['cart'].product.price }}"/></td>
+            </tr>
+          {% endfor %}
+          <tr>
+            <th scope="row"></th>
+            <td></td>
+            <td id="cartTotalPrice"></td>
+            <td><input type="number" class="form-control" id="cartTotalCnt" disabled/></td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-primary form-control" onclick="buy()">구매하기</button>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    $(function () {
+      let cartTotalPrice = 0;
+      let cartTotalCnt = 0;
+      {% for key, value in carts.items() %}
+        cartTotalPrice += {{ value['cart'].product.price }}
+        cartTotalCnt += {{ value['cnt'] }}
+      {% endfor %}
+      $("#cartTotalPrice").text(`${comma(cartTotalPrice)}원`);
+      $("#cartTotalCnt").val(cartTotalCnt);
+    });
+
+    $(".cart-cnt").change(function () {
+      let totalPrice = 0;
+      let totalCnt = 0;
+      $(".cart-cnt").each(function () {
+        const price = $(this).data('price');
+        const cnt = $(this).val() * 1;
+        totalPrice += price * cnt;
+        totalCnt += cnt;
+      });
+      $("#cartTotalPrice").text(`${comma(totalPrice)}원`);
+      $("#cartTotalCnt").val(totalCnt);
+    });
+
+    function buy() {
+      let data = {
+        'product_ids': [],
+        'product_cnt': [],
+      };
+      $(".cart-cnt").each(function () {
+        const productId = $(this).data('product-id');
+        const cnt = $(this).val() * 1;
+        data.product_ids.push(productId);
+        data.product_cnt.push(cnt);
+      });
+      data.product_ids = data.product_ids.join(',');
+      data.product_cnt = data.product_cnt.join(',');
+      $.ajax({
+        url: `{{ url_for('apis_orders.create_order') }}`,
+        type: "POST",
+        data: data,
+        success: function(data) {
+          window.location.href = "{{ url_for('orders.index') }}"
+        },
+        error(xhr) {
+          alert(`${xhr.status} / ${xhr.responseJSON['message']}`);
+        }
+      });
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>showtimes</title>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    {% include('layout/nav.html') %}
+    <ul class="nav nav-tabs">
+      {% for week in week_list %}
+        <li class="nav-item">
+          {% if week['date'] == date %}
+            <a class="nav-link active" data-toggle="tab" href="#{{ week['weekday'] }}">{{ week['weekday'] }}</a>
+          {% else %}
+            <a class="nav-link" data-toggle="tab" href="#{{ week['weekday'] }}">{{ week['weekday'] }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content">
+      {% for week in week_list %}
+        <div class="tab-pane fade {% if week['date'] == date %}show active{% endif %}" id="{{ week['weekday'] }}">
+          <ul class="list-group list-group-flush">
+            {% for movie in movies %}
+              <li class="list-group-item">
+                {{ movie.title }} / {{ movie.director }} / {{ movie.age_rating }}세 이상 관람가
+              </li>
+              {% for showtime in movie.showtimes %}
+                {% if showtime.start_time.strftime('%Y-%m-%d') == week['date'] %}
+                  {% if now < showtime.start_time %}
+                    {% if showtime.theater.seat < 1 %}
+                      <li class="list-group-item disabled">
+                        <a class="text-black-50" href="{{ url_for('theaters.detail', theater_id=showtime.theater.id, showtime_id=showtime.id) }}">
+                          {{ showtime.start_time.strftime('%H:%M') }} ~ {{ showtime.end_time.strftime('%H:%M') }} {{ showtime.theater.title }} 매진
+                        </a>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">
+                        <a href="{{ url_for('theaters.detail', theater_id=showtime.theater.id, showtime_id=showtime.id) }}">
+                          {{ showtime.start_time.strftime('%H:%M') }} ~ {{ showtime.end_time.strftime('%H:%M') }} {{ showtime.theater.title }} {{ showtime.theater.seat }}석
+                        </a>
+                      </li>
+                    {% endif %}
+                  {% else %}
+                    <li class="list-group-item disabled">
+                      <a class="text-black-50" href="{{ url_for('theaters.detail', theater_id=showtime.theater.id, showtime_id=showtime.id) }}">
+                        {{ showtime.start_time.strftime('%H:%M') }} ~ {{ showtime.end_time.strftime('%H:%M') }} {{ showtime.theater.title }} 매진
+                      </a>
+                    </li>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

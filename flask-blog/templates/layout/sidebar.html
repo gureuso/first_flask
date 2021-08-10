@@ -1,0 +1,27 @@
+<div id="sidebar">
+  <div id="sidebar-profile">
+    <a href="{{ url_for('index.index') }}"><img src="/static/image/profile.png" id="sidebar-profile-img"></a>
+    <p id="sidebar-profile-text">
+      플라스크 블로그
+    </p>
+  </div>
+  <div id="sidebar-icon">
+    <a href="/">
+      <i class="fa fa-home fa-2x" aria-hidden="true"></i>
+    </a>
+    <a href="{{ url_for('index.about') }}">
+      <i class="fa fa-user fa-2x" aria-hidden="true"></i>
+    </a>
+    <a href="{{ url_for('index.create') }}">
+      <i class="fa fa-edit fa-2x" aria-hidden="true"></i>
+    </a>
+    <a onclick="showSearch();" style="cursor: pointer;">
+      <i class="fa fa-search fa-2x" aria-hidden="true"></i>
+    </a>
+    <div id="search" style="display: none">
+      <input>
+      <i class="fa fa-times fa-1x" aria-hidden="true" onclick="hideSearch();"></i>
+      <ul id="search-result"></ul>
+    </div>
+  </div>
+</div>

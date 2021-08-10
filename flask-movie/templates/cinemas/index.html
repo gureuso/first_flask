@@ -1,0 +1,25 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>cinema</title>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    {% include('layout/nav.html') %}
+    <div class="card-group">
+      {% for cinema in cinemas %}
+        <div class="card" style="">
+          <img class="card-img-top" src="{{ cinema.image_url }}" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{ cinema.title }}</h5>
+            <p class="card-text">{{ cinema.address }} {{ cinema.detail_address }}</p>
+          </div>
+          <div class="card-body">
+            <a href="{{ url_for('showtimes.index', movie_id=movie_id, cinema_id=cinema.id) }}" class="card-link btn btn-primary">예매하기</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

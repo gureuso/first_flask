@@ -1,0 +1,40 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>signin</title>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body text-center pb-0">
+            <img src="/static/image/users/logo.png" class="w-75 rounded-circle">
+            <h5 class="mt-2">Login to your account</h5>
+
+            <form action="/users/signin" method="post">
+              {{ form.hidden_tag() }}
+              <div class="form-group">
+                {{ form.email(class='form-control mt-4', placeholder='Email') }}
+                <div class="invalid-feedback d-block text-left">
+                  {{ form.email.errors[0] }}
+                </div>
+              </div>
+              <div class="form-group">
+                {{ form.password(class='form-control mt-3', placeholder='Password') }}
+                <div class="invalid-feedback d-block text-left">
+                  {{ form.password.errors[0] }}
+                </div>
+              </div>
+
+              <input type="submit" value="signin" class="form-control btn btn-primary">
+            </form>
+
+            <a href="/users/signup" class="text-left"><p class="small">signup</p></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

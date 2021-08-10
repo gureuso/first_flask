@@ -1,0 +1,54 @@
+<!doctype html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/bootstrap/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/popper.min.js"></script>
+  <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+  {% block head %}
+  {% endblock %}
+</head>
+<body>
+  <script>
+    function getProduct() {
+      let page = $("#more").data('page');
+
+      $.ajax({
+        url: `{{ url_for('apis_products.products') }}?page=${page}&category_id={% if category %}{{ category.id }}{% endif %}`,
+        type: "GET",
+        success: function(data) {
+          for(let product of data.data) {
+            $("#products").append(`
+              <div class="col-lg-2 p-0">
+                <div class="card">
+                  <img src="${product.image_url}" class="card-img-top" alt="">
+                  <div class="card-body">
+                    <a href="/products/${product.id}">
+                      <h5 class="card-title">${product.name}</h5>
+                    </a>
+                    <p class="card-text"></p>
+                  </div>
+                </div>
+              </div>
+            `)
+          }
+        },
+        error(xhr) {
+          alert(`${xhr.status} / ${xhr.responseJSON['message']}`);
+        }
+      });
+
+      page += 1
+      $("#more").data('page', page)
+    }
+    function comma(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+  </script>
+  {% block body %}
+  {% endblock %}
+  {% block script %}
+  {% endblock %}
+</body>

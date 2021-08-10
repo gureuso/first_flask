@@ -1,0 +1,25 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>about</title>
+{% endblock %}
+
+{% block body %}
+  <div id="container">
+    {% include 'layout/sidebar.html' %}
+
+    <div id="main">
+      <div id="main-title">
+        <h1>자기소개</h1>
+      </div>
+
+      <br>
+      <p>
+        안녕 나는 {{ current_user.nickname }}라고 해. 내 이메일 주소는 {{ current_user.email }}이야.
+        <span><a href="{{ url_for('users.signout') }}">로그아웃</a></span>
+      </p>
+    </div>
+
+
+  </div>
+{% endblock %}

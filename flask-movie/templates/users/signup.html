@@ -1,0 +1,51 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>signup</title>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <img src="/static/image/users/logo.png" class="w-75 rounded-circle">
+            <h5 class="mt-2">Create account</h5>
+
+            <form action="/users/signup" method="post">
+              {{ form.hidden_tag() }}
+              <div class="form-group">
+                {{ form.email(class='form-control mt-4', placeholder='Email') }}
+                <div class="invalid-feedback d-block text-left">
+                  {{ form.email.errors[0] }}
+                </div>
+              </div>
+              <div class="form-group">
+                {{ form.nickname(class='form-control mt-4', placeholder='Nickname') }}
+                <div class="invalid-feedback d-block text-left">
+                  {{ form.nickname.errors[0] }}
+                </div>
+              </div>
+              <div class="form-group">
+                {{ form.age(class='form-control mt-4', placeholder='Age') }}
+                <div class="invalid-feedback d-block text-left">
+                  {{ form.age.errors[0] }}
+                </div>
+              </div>
+              <div class="form-group">
+                {{ form.password(class='form-control mt-3', placeholder='Password') }}
+                <div class="invalid-feedback d-block text-left">
+                  {{ form.password.errors[0] }}
+                </div>
+              </div>
+
+              <input type="submit" value="signup" class="form-control btn btn-primary">
+            </form>
+            <a class="text-left" href="/users/signin"><p class="small">signin</p></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

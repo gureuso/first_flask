@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/bootstrap/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/popper.min.js"></script>
+  <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+  <script>
+    $(function() {
+      $("#search > input").on("keyup", function() {
+        $.ajax({
+          url: "{{ url_for('apis_posts.get_posts') }}?q=" + $(this).val(),
+          type: "GET",
+          success: function(data) {
+            $("#search-result").html("");
+            for(let post of data.data) {
+              $("#search-result").append(`<li><a href="/${post.id}">${post.title}</a></li>`)
+            }
+          },
+          error(xhr) {
+            alert(`${xhr.status} / ${xhr.responseJSON['message']}`);
+          }
+        });
+      });
+    });
+
+    function goToURL(url) {
+      location.href = url;
+    }
+
+    function showSearch() {
+      $('#search').css({'display': 'block'});
+      $('#search > input').focus();
+    }
+
+    function hideSearch() {
+      $('#search').css({'display': 'none'});
+    }
+  </script>
+  {% block head %}
+  {% endblock %}
+</head>
+<body>
+  {% import 'layout/pagination.html' as macros %}
+  {% block body %}
+  {% endblock %}
+  {% block script %}
+  {% endblock %}
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>test</title>
+{% endblock %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-lg-6">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for test in tests %}
+            <tr>
+              <td>{{ test.id }}</td>
+              <td>{{ test.message }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

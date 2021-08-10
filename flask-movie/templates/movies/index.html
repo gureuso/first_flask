@@ -1,0 +1,30 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>movies</title>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    {% include('layout/nav.html') %}
+    <div class="card-group">
+      {% for movie in movies %}
+        <div class="card" style="">
+          <img class="card-img-top" src="{{ movie.poster_url }}" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{ movie.title }}</h5>
+            <p class="card-text">{{ movie.description }}</p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">감독: {{ movie.director }}</li>
+            <li class="list-group-item">상영 시간: {{ movie.running_time }}분</li>
+            <li class="list-group-item">상영 등급: {{ movie.age_rating }}세 이용가</li>
+          </ul>
+          <div class="card-body">
+            <a href="{{ url_for('cinemas.index', movie_id=movie.id) }}" class="card-link btn btn-primary">예매하기</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

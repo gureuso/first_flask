@@ -1,0 +1,98 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>cinema</title>
+  <style>
+    .seat {
+      width: 100px;
+      padding: 30px;
+      border: 2px solid black;
+      margin-bottom: 10px;
+    }
+    .seat-danger {
+      border: 2px solid red;
+    }
+    .seat-primary {
+      border: 2px solid blue;
+    }
+    .footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      padding: 20px 0;
+      background-color: #e9ecef;
+      text-align: center;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    {% include('layout/nav.html') %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4 text-center">{{ theater.title }} Screen</h1>
+      </div>
+    </div>
+    <div class="text-center mb-5">
+      {% for seat in range(1, theater.seat+1) %}
+        {% set y = seat % 10 %}
+        <div class="d-inline-block seat" data-x="{{ seat }}" data-y="{{ y }}">{{seat}}</div>
+        {% if y == 0 %}
+          <br>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="footer">
+      <a href="#" onclick="checkSeat()"><p class="mb-0">예매하기</p></a>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    $(function() {
+      setSeat();
+
+      $(".seat").click(function() {
+        if(!$(this).hasClass("seat-danger")) {
+          if($(this).hasClass("seat-primary")) {
+            $(this).removeClass("seat-primary");
+          } else {
+            $(this).addClass("seat-primary");
+          }
+        }
+      });
+    });
+
+    function checkSeat() {
+      let seat_list = []
+      $(".seat-primary").each(function() {
+        const seat = `${$(this).data("x")}-${$(this).data("y")}`;
+        seat_list.push(seat)
+      });
+      const data = {theater_id: "{{ theater.id }}", showtime_id: "{{ showtime.id }}", seat_list: seat_list.join(",")};
+      $.ajax({
+        url: "/theater_tickets",
+        type: 'POST',
+        data: data,
+        success: function() {
+          alert('예매되었습니다.');
+          window.location.reload();
+        },
+        error(xhr) {
+          swal({
+            title: xhr.status,
+            text: xhr.responseJSON['message']
+          });
+        }
+      });
+    }
+
+    function setSeat() {
+      {% for theater_ticket in theater_tickets %}
+        $("div[data-x={{ theater_ticket.x }}]div[data-y={{ theater_ticket.y }}]").addClass("seat-danger");
+      {% endfor %}
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>test</title>
+{% endblock %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-lg-3 m-2">
+      <form action="/test/html" method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-group row">
+          <label class="col-form-label col-lg-3">과일들</label>
+          <div class="col-lg-9">
+            {{ form.fruits(class='form-control') }}
+            <div class="invalid-feedback d-block">
+              {{ form.fruits.errors[0] }}
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-form-label col-lg-3">가격</label>
+          <div class="col-lg-9">
+            {{ form.amount(class='form-control') }}
+            <div class="invalid-feedback d-block">
+              {{ form.amount.errors[0] }}
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-form-label col-lg-3">구매자</label>
+          <div class="col-lg-9">
+            {{ form.username(class='form-control') }}
+            <div class="invalid-feedback d-block">
+              {{ form.username.errors[0] }}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <span class="text-primary">{{ result }}</span>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary float-right" type="submit" value="submit">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

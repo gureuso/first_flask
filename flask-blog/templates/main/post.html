@@ -1,0 +1,183 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>index</title>
+{% endblock %}
+
+{% block body %}
+  <div id="container">
+    {% include 'layout/sidebar.html' %}
+
+    <div id="main">
+      <div id="main-post">
+        <h1>{{ post.title }}</h1>
+        <span>{{ post.updated_at }}</span>
+        <span>{{ post.user.nickname }}</span>
+        <span>{{ view_cnt }}</span>
+        <a href="{{ url_for('index.update', post_id=post.id) }}" class="float-right">수정</a>
+        <a href="#" class="float-right" onclick="delete_post()">삭제</a>
+        <p>
+          {{ post.content|safe }}
+        </p>
+        <ul class="tag">
+          {% for tag in post.tags %}
+            <li>{{ tag.title }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="main-links">
+        {% if prev_post %}
+          <div class="main-links-prev" id="main-post-pagination-prev" onclick="goToURL('{{ url_for('index.get_post', post_id=prev_post.id) }}')">
+            <a href="{{ url_for('index.get_post', post_id=prev_post.id) }}">&lt; {{ prev_post.title }}</a>
+          </div>
+        {% endif %}
+        {% if next_post %}
+          <div class="main-links-next" id="main-post-pagination-next" onclick="goToURL('{{ url_for('index.get_post', post_id=next_post.id) }}')">
+            <a href="{{ url_for('index.get_post', post_id=next_post.id) }}">{{ next_post.title }} &gt;</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <table>
+        <tbody>
+          {% for related_post in related_posts %}
+            <tr>
+              <td class="related-post-img">
+                {% if related_post.thumbnail %}
+                  {{ related_post.thumbnail|safe }}
+                {% else %}
+                  <div></div>
+                {% endif %}
+              </td>
+              <td class="related-post-title">
+                <div>
+                  <a href="/{{ related_post.id }}">{{ related_post.title }}</a>
+                </div>
+                <span>{{ related_post.content|safe }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="input-group">
+            <textarea id="cm_content" class="form-control" placeholder="답변내용" rows="3"></textarea>
+            <div class="input-group-append">
+              <span class="input-group-text" style="cursor:pointer;" onclick="create_comment()">답변등록</span>
+            </div>
+          </div>
+
+          {% for comment in comments %}
+            <div class="input-group mt-3">
+              <input type="text" class="form-control" value="답변자 : {{ comment.user.nickname }} 등록일 : {{ comment.created_at }}" readonly>
+              <div class="input-group-append">
+                <button class="btn btn-success" onclick="update_comment({{ comment.id }})">수정</button>
+                <button class="btn btn-danger" onclick="delete_comment({{ comment.id }})">삭제</button>
+              </div>
+            </div>
+            <textarea id="cm_{{ comment.id }}" class="form-control" rows="3" style="min-height: {{ comment.content|length }}px;">{{ comment.content }}</textarea>
+
+            {% for child_comment in comment.comments %}
+              <div class="input-group pl-5">
+                <input type="text" class="form-control" value="답변자 : {{ child_comment.user.nickname }} 등록일 : {{ child_comment.created_at }}" readonly>
+                <div class="input-group-append">
+                  <button class="btn btn-success" onclick="update_comment({{ child_comment.id }})">수정</button>
+                  <button class="btn btn-danger" onclick="delete_comment({{ child_comment.id }})">삭제</button>
+                </div>
+              </div>
+              <div class="input-group pl-5">
+                <textarea id="cm_{{ child_comment.id }}" class="form-control" rows="3" style="min-height: {{ child_comment.cm_content|length }}px;">{{ child_comment.content }}</textarea>
+              </div>
+            {% endfor %}
+            <div class="input-group pl-5">
+              <textarea id="cm_{{ comment.id }}_child" class="form-control" placeholder="답변내용" rows="3"></textarea>
+              <div class="input-group-append">
+                <span class="input-group-text" style="cursor:pointer;" onclick="create_comment('{{ comment.id }}')">답변등록</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    function delete_post() {
+      if(!confirm("정말 삭제하시겠습니까?")) {
+        return;
+      }
+
+      $.ajax({
+        url: "{{ url_for('apis_posts.delete_post', post_id=post.id) }}",
+        type: "DELETE",
+        success: function() {
+          window.location.href = "{{ url_for('index.index') }}"
+        },
+        error(xhr) {
+          alert(`${xhr.status} / ${xhr.responseJSON['message']}`);
+        }
+      });
+    }
+
+    function delete_comment(comment_id) {
+      if(!confirm("정말 삭제하시겠습니까?")) {
+        return;
+      }
+      $.ajax({
+        url: `/apis/posts/{{ post.id }}/comments/${comment_id}`,
+        type: 'DELETE',
+        success: function() {
+          window.history.go(0);
+        },
+        error(xhr) {
+          alert(xhr.status);
+        }
+      });
+    }
+
+    function update_comment(comment_id) {
+      if(!confirm("정말 수정하시겠습니까?")) {
+        return;
+      }
+      const content = $(`#cm_${comment_id}`).val();
+
+      $.ajax({
+        url: `/apis/posts/{{ post.id }}/comments/${comment_id}`,
+        type: 'PUT',
+        data: {content},
+        success: function() {
+          window.history.go(0);
+        },
+        error(xhr) {
+          alert(xhr.status);
+        }
+      });
+    }
+
+    function create_comment(comment_id) {
+      let content;
+      if(comment_id) {
+        content = $(`#cm_${comment_id}_child`).val();
+      } else {
+        content = $("#cm_content").val();
+      }
+
+      $.ajax({
+        url: `/apis/posts/{{ post.id }}/comments`,
+        type: 'POST',
+        data: {content: content, parent_id: comment_id},
+        success: function() {
+          window.history.go(0);
+        },
+        error(xhr) {
+          alert(xhr.status);
+        }
+      });
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>flask shop</title>
+{% endblock %}
+
+{% block body %}
+  {% include 'layout/header.html' %}
+
+  <div class="container pt-4">
+    <div class="row">
+      <div class="col-lg-4">
+        <img src="{{ product.image_url }}" class="card-img-top" alt="">
+      </div>
+      <div class="col-lg-4">
+      </div>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text"></p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">{{'{:,}'.format(product.price)}}원</li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" onclick="buy()">구매하기</a>
+            <a href="#" class="card-link" onclick="addCart()">장바구니</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    function buy() {
+      let data = {
+        'product_ids': [{{ product.id }}],
+        'product_cnt': [1],
+      };
+      data.product_ids = data.product_ids.join(',');
+      data.product_cnt = data.product_cnt.join(',');
+      $.ajax({
+        url: `{{ url_for('apis_orders.create_order') }}`,
+        type: "POST",
+        data: data,
+        success: function(data) {
+          window.location.href = "{{ url_for('orders.index') }}"
+        },
+        error(xhr) {
+          alert(`${xhr.status} / ${xhr.responseJSON['message']}`);
+        }
+      });
+    }
+
+    function addCart() {
+      const data = {product_id: "{{ product.id }}"};
+      $.ajax({
+        url: `{{ url_for('apis_carts.create_cart') }}`,
+        type: "POST",
+        data: data,
+        success: function(data) {
+          if(confirm('장바구니에 추가되었습니다. 장바구니로 이동하시겠습니까?')) {
+            window.location.href = "{{ url_for('carts.index') }}";
+          }
+        },
+        error(xhr) {
+          window.location.href = "{{ url_for('users.signin') }}";
+        }
+      });
+    }
+  </script>
+{% endblock %}

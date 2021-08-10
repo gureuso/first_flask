@@ -1,0 +1,22 @@
+# python
+*.pyo
+*.pyc
+.idea/
+venv/
+
+# mac
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# vim
+*.swp
+*.swo
+
+# flask
+!migrations/versions/.keep
+config.json

@@ -1,0 +1,39 @@
+{% extends 'layout/base.html' %}
+
+{% block head %}
+  <title>flask shop</title>
+{% endblock %}
+
+{% block body %}
+  {% include 'layout/header.html' %}
+
+  <div class="jumbotron jumbotron-fluid main-desc">
+    <div class="container">
+      <h1 class="display-4">Flask Shop</h1>
+      <p class="lead">플라스크 쇼핑몰 예제 사이트입니다.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row" id="products">
+      {% for product in products %}
+        <div class="col-lg-2 p-0">
+          <div class="card">
+            <a href="{{ url_for('product.get_product', product_id=product.id) }}">
+              <img src="{{ product.image_url }}" class="card-img-top" alt="">
+            </a>
+            <div class="card-body">
+              <a href="{{ url_for('product.get_product', product_id=product.id) }}">
+                <h5 class="card-title">{{ product.name }}</h5>
+              </a>
+              <p class="card-text"></p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div id="more" class="form-control btn btn-primary mt-4 mb-4" data-page="1" onclick="getProduct()">more</div>
+  </div>
+{% endblock %}
+{% block script %}
+{% endblock %}

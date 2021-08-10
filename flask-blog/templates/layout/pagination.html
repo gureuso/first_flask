@@ -1,0 +1,15 @@
+{% macro pagination_index(pagination, endpoint) %}
+  <div id="main-pagination">
+    {% for p in pagination.iter_pages() %}
+      {% if p %}
+        {% if p == pagination.page %}
+          <em>{{ p }}</em>
+        {% else %}
+          <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+        {% endif %}
+      {% else %}
+        <a>...</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endmacro %}

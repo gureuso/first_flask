@@ -1,0 +1,55 @@
+<div class="container">
+  <ul class="nav justify-content-end">
+    {% if current_user.is_authenticated %}
+      <li class="nav-item">
+        <a href="{{ url_for('users.signout') }}">logout</a>
+      </li>
+    {% else %}
+      <li class="nav-item float-right">
+        <a href="{{ url_for('users.signin') }}">login</a>
+      </li>
+    {% endif %}
+  </ul>
+</div>
+<hr class="m-0">
+<div class="container">
+  <ul class="nav justify-content-center">
+    <li class="nav-item">
+      <a class="nav-link active text-dark" href="{{ url_for('index.index') }}">
+        <h2>Flask Shop</h2>
+      </a>
+    </li>
+  </ul>
+  <nav class="navbar navbar-light bg-white justify-content-center">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('index.index') }}">All</a>
+      </li>
+      {% for category in categories %}
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url_for('category.get_category', category_id=category.id) }}">{{ category.name.upper() }}</a>
+        </li>
+      {% endfor %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('orders.index') }}">
+          <i class="fa fa-clone" aria-hidden="true">
+            <span class="badge badge-dark">{{ orders|length }}</span>
+          </i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('carts.index') }}">
+          <i class="fa fa-shopping-cart" aria-hidden="true">
+            <span class="badge badge-dark">{{ carts|length }}</span>
+          </i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('users.profile') }}">
+          <i class="fa fa-user" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<hr class="m-0">
